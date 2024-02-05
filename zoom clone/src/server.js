@@ -27,4 +27,11 @@ const server = http.createServer(app);
 // http 서버 위에 webSocket 서버 생성
 const wss = new WebSocket.Server({ server });
 
+function handleConnection(socket) {
+  console.log(socket);
+}
+
+wss.on("connection", handleConnection);
+// socket이란 연결된 유저의 contact line
+
 server.listen(3000, handleListen);
