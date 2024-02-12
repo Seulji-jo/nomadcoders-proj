@@ -8,16 +8,19 @@ socket.addEventListener("open", () => {
 });
 
 socket.addEventListener("message", (msg) => {
-  console.log("New Message: ", msg.data);
+  // console.log("New Message: ", msg.data);
+  const $li = document.createElement("li");
+  $li.innerText = msg.data;
+  msgList.append($li);
 });
 
 socket.addEventListener("close", () => {
   console.log("disconnected to Sever ❌");
 });
 
-setTimeout(() => {
-  socket.send("hello from the browser!");
-}, 10000);
+// setTimeout(() => {
+//   socket.send("hello from the browser!");
+// }, 10000);
 
 function handleSubmit(e) {
   e.preventDefault();
