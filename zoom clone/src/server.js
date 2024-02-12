@@ -27,11 +27,14 @@ const server = http.createServer(app);
 // http 서버 위에 webSocket 서버 생성
 const wss = new WebSocket.Server({ server });
 
-function handleConnection(socket) {
-  console.log(socket);
-}
-
-wss.on("connection", handleConnection);
+wss.on("connection", (socket) => {
+  // console.log(socket);
+  console.log("connected to Browser ⭕️");
+  // browser가 닫히면 실행되는 event
+  socket.on("close", () => console.log("disconnected to Browser ❌"));
+  socket.on("message", (msg) => console.log(msg.toString()));
+  socket.send("hello!!");
+});
 // socket이란 연결된 유저의 contact line
 
 server.listen(3000, handleListen);
