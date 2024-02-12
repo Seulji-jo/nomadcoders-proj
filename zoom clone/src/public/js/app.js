@@ -34,6 +34,9 @@ function handleSubmit(e) {
   e.preventDefault();
   const $input = msgForm.querySelector("input");
   socket.send(makeMsg("new_message", $input.value));
+  const $li = document.createElement("li");
+  $li.innerText = `You: ${$input.value}`;
+  msgList.append($li);
   $input.value = "";
 }
 
