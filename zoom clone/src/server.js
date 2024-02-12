@@ -36,7 +36,6 @@ wss.on("connection", (socket) => {
   // browser가 닫히면 실행되는 event
   socket.on("close", () => console.log("disconnected to Browser ❌"));
   socket.on("message", (msg) => {
-    // socket.send(msg.toString());
     sockets.forEach((aSocket) => aSocket.send(msg.toString()));
   });
 });
