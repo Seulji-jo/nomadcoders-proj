@@ -32,11 +32,25 @@ const sockets = [];
 // 각 브라우저에서 따로 작동된다.
 wss.on("connection", (socket) => {
   sockets.push(socket);
+  socket["nickname"] = "Anon";
   console.log("connected to Browser ⭕️");
   // browser가 닫히면 실행되는 event
   socket.on("close", () => console.log("disconnected to Browser ❌"));
   socket.on("message", (msg) => {
-    sockets.forEach((aSocket) => aSocket.send(msg.toString()));
+    const message = JSON.parse(msg.toString());
+    console.log(message, msg.toString());
+    switch (message.type) {
+      case "new_message":
+        sockets.forEach((aSocket) =>
+          aSocket.send(`${socket.nickname}: ${message.payload}`)
+        );
+        break;
+      case "nickname":
+        socket["nickname"] = message.payload;
+        break;
+      default:
+        break;
+    }
   });
 });
 // socket이란 연결된 유저의 contact line

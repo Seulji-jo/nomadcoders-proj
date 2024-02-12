@@ -5,6 +5,8 @@ const socket = new WebSocket(`ws://${window.location.host}`);
 // on mobile, localhost:3000 is not exist so try to use window object to find host
 
 function makeMsg(type, payload) {
+  // back으로 js object로 보내면 안된다.
+  // back이 다른 언어일지도 몰라서 JSON을 이용해 string으로 보낸다.
   const msg = { type, payload };
   return JSON.stringify(msg);
 }
@@ -39,6 +41,7 @@ function handleNickSubmit(e) {
   e.preventDefault();
   const $input = nickForm.querySelector("input");
   socket.send(makeMsg("nickname", $input.value));
+  $input.value = "";
 }
 
 msgForm.addEventListener("submit", handleSubmit);
