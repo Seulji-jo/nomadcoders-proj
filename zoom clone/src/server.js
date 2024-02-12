@@ -27,13 +27,18 @@ const server = http.createServer(app);
 // http 서버 위에 webSocket 서버 생성
 const wss = new WebSocket.Server({ server });
 
+const sockets = [];
+
+// 각 브라우저에서 따로 작동된다.
 wss.on("connection", (socket) => {
-  // console.log(socket);
+  sockets.push(socket);
   console.log("connected to Browser ⭕️");
   // browser가 닫히면 실행되는 event
   socket.on("close", () => console.log("disconnected to Browser ❌"));
-  socket.on("message", (msg) => console.log(msg.toString()));
-  socket.send("hello!!");
+  socket.on("message", (msg) => {
+    // socket.send(msg.toString());
+    sockets.forEach((aSocket) => aSocket.send(msg.toString()));
+  });
 });
 // socket이란 연결된 유저의 contact line
 
