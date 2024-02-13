@@ -1,6 +1,7 @@
 import http from "http";
-import WebSocket from "ws";
+import SocketIO from "socket.io";
 import express from "express";
+import { Socket } from "dgram";
 
 const app = express();
 
@@ -22,11 +23,17 @@ const handleListen = () => console.log(`Listening on http://localhost:3000`);
 
 // http 서버 생성
 const server = http.createServer(app);
+const io = SocketIO(server);
+
+io.on("connection", (socket) => {
+  console.log(socket);
+});
 
 // http서버도 같이 돌려야할 경우 위에서 생성한 http서버 전달
 // http 서버 위에 webSocket 서버 생성
-const wss = new WebSocket.Server({ server });
 
+/*
+const wss = new WebSocket.Server({ server });
 const sockets = [];
 
 // 각 브라우저에서 따로 작동된다.
@@ -52,7 +59,7 @@ wss.on("connection", (socket) => {
         break;
     }
   });
-});
+});*/
 // socket이란 연결된 유저의 contact line
 
 server.listen(3000, handleListen);
