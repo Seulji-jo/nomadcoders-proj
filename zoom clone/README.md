@@ -145,3 +145,5 @@ websocket사용이 불가해도 다른방법으로 돌아간다.
 
 - 커스텀 이벤트 사용 가능
 - front에서 js object를 보낼수 있다.
+- socket.emit argument 개수 및 타입에 제한이 없다.
+- 끝날때 실행되는 fn을 보내고 싶으면 마지막 argu에 넣는다
