@@ -26,6 +26,7 @@ const server = http.createServer(app);
 const io = SocketIO(server);
 
 io.on("connection", (socket) => {
+  socket["nickname"] = "Anon";
   socket.onAny((e) => {
     console.log(`Socket Event: ${e}`);
   });
@@ -35,15 +36,18 @@ io.on("connection", (socket) => {
     socket.join(roomName);
     console.log(socket.rooms);
     done();
-    socket.to(roomName).emit("welcome");
+    socket.to(roomName).emit("welcome", socket.nickname);
   });
   socket.on("disconnecting", () => {
-    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+    socket.rooms.forEach((room) =>
+      socket.to(room).emit("bye", socket.nickname)
+    );
   });
   socket.on("new_message", (msg, room, done) => {
-    socket.to(room).emit("new_message", msg);
+    socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
     done();
   });
+  socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
 });
 
 // http서버도 같이 돌려야할 경우 위에서 생성한 http서버 전달
