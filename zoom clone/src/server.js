@@ -26,7 +26,10 @@ const server = http.createServer(app);
 const io = SocketIO(server);
 
 io.on("connection", (socket) => {
-  console.log(socket);
+  socket.on("enter_room", (msg, done) => {
+    console.log(msg);
+    setTimeout(() => done(), 10000);
+  });
 });
 
 // http서버도 같이 돌려야할 경우 위에서 생성한 http서버 전달

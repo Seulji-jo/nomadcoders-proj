@@ -142,3 +142,6 @@ SocketIO는 websocket의 부가기능이 아니라
 websocket을 사용해 실시간, 양방향, event기반의 통신을 제공하는 프레임워크다.
 websocket사용이 불가해도 다른방법으로 돌아간다.
 (websocket을 지원하지 않는 경우, HTTP long polling같은 것을 사용)
+
+- 커스텀 이벤트 사용 가능
+- front에서 js object를 보낼수 있다.
