@@ -147,3 +147,16 @@ websocket사용이 불가해도 다른방법으로 돌아간다.
 - front에서 js object를 보낼수 있다.
 - socket.emit argument 개수 및 타입에 제한이 없다.
 - 끝날때 실행되는 fn을 보내고 싶으면 마지막 argu에 넣는다
+
+---
+
+### Adapter
+
+- 다른 서버들 사이에 실시간 어플리케이션을 동기화 한다.
+- 나뉘어 있는 서버간의 통신을 해준다.
+- adapter가 어플로 통하는 창문이다.
+
+  - 누가 연결됐는지, 현 어플에 room이 얼마나 있는지 알려준다.
+
+- Map에 있는 rooms ID를 socket ID(sids)에서 찾을 수 있다면 Private room을 찾은것이다.
+  - room ID를 sids에서 찾을 수 없다면 public room이다.
