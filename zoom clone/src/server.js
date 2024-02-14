@@ -1,6 +1,7 @@
 import http from "http";
-import SocketIO from "socket.io";
+import { Server } from "socket.io";
 import express from "express";
+import { instrument } from "@socket.io/admin-ui";
 import { Socket } from "dgram";
 
 const app = express();
@@ -22,8 +23,18 @@ const handleListen = () => console.log(`Listening on http://localhost:3000`);
 // express는 ws를 지원 안하기 때문에 하기와 같이 function을 생성해 설정해아한다.
 
 // http 서버 생성
-const server = http.createServer(app);
-const io = SocketIO(server);
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+});
+
+instrument(io, {
+  auth: false,
+  mode: "development",
+});
 
 function publicRooms() {
   const {
@@ -41,6 +52,10 @@ function publicRooms() {
   return publicRooms;
 }
 
+function countRoom(roomName) {
+  return io.sockets.adapter.rooms.get(roomName)?.size;
+}
+
 io.on("connection", (socket) => {
   socket["nickname"] = "Anon";
   socket.onAny((e) => {
@@ -53,13 +68,13 @@ io.on("connection", (socket) => {
     socket.join(roomName);
     console.log(socket.rooms);
     done();
-    socket.to(roomName).emit("welcome", socket.nickname);
+    socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });
   socket.on("disconnecting", () => {
     // disconnection event 방을 떠나기 직전에 발생
     socket.rooms.forEach((room) =>
-      socket.to(room).emit("bye", socket.nickname)
+      socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1)
     );
   });
   socket.on("disconnect", () => io.sockets.emit("room_change", publicRooms()));
@@ -103,4 +118,4 @@ wss.on("connection", (socket) => {
 });*/
 // socket이란 연결된 유저의 contact line
 
-server.listen(3000, handleListen);
+httpServer.listen(3000, handleListen);
