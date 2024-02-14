@@ -54,12 +54,15 @@ io.on("connection", (socket) => {
     console.log(socket.rooms);
     done();
     socket.to(roomName).emit("welcome", socket.nickname);
+    io.sockets.emit("room_change", publicRooms());
   });
   socket.on("disconnecting", () => {
+    // disconnection event 방을 떠나기 직전에 발생
     socket.rooms.forEach((room) =>
       socket.to(room).emit("bye", socket.nickname)
     );
   });
+  socket.on("disconnect", () => io.sockets.emit("room_change", publicRooms()));
   socket.on("new_message", (msg, room, done) => {
     socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
     done();

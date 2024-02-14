@@ -67,3 +67,13 @@ socket.on("bye", (left) => {
 });
 
 socket.on("new_message", addMessage);
+
+socket.on("room_change", (rooms) => {
+  const $roomList = $welcome.querySelector("ul");
+  rooms.forEach((room) => {
+    $roomList.innerHTML = "";
+    const $li = document.createElement("li");
+    $li.innerText = room;
+    $roomList.append($li);
+  });
+});
