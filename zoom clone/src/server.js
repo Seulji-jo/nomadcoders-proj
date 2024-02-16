@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
     console.log(socket.rooms);
     socket.join(roomName);
     console.log(socket.rooms);
-    done();
+    done(countRoom(roomName));
     socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });

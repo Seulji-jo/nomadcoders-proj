@@ -10,7 +10,7 @@ $room.hidden = true;
 let roomName;
 
 function addMessage(message) {
-  const $ul = document.querySelector("ul");
+  const $ul = $room.querySelector("ul");
   const $li = document.createElement("li");
   $li.innerText = message;
   $ul.appendChild($li);
@@ -33,11 +33,11 @@ function handleNicknameSubmit(e) {
   socket.emit("nickname", value);
 }
 
-function showRoom() {
+function showRoom(newCount) {
   $welcome.hidden = true;
   $room.hidden = false;
   const $h3 = room.querySelector("h3");
-  $h3.innerText = `Room ${roomName}`;
+  $h3.innerText = `Room ${roomName} (${newCount})`;
 
   const $msgForm = $room.querySelector("#msg");
   const $nameForm = $room.querySelector("#name");
