@@ -1,6 +1,7 @@
 import http from "http";
 import SocketIO from "socket.io";
 import express from "express";
+import { off } from "process";
 
 const app = express();
 
@@ -18,6 +19,9 @@ io.on("connection", (socket) => {
     socket.join(roomName);
     done();
     socket.to(roomName).emit("welcome");
+  });
+  socket.on("offer", (offer, roomName) => {
+    socket.to(roomName).emit("offer", offer);
   });
 });
 
