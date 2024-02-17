@@ -6,11 +6,16 @@ const $muteBtn = document.getElementById("mute");
 const $cameraBtn = document.getElementById("camera");
 const $cameraSelect = document.getElementById("cameras");
 
+const $call = document.getElementById("call");
+
+$call.hidden = true;
+
 // stream = video + audio
 // stream은 track을 제공하고 접근 가능하다.
 let myStream;
 let isMuted = false;
 let isCameraOn = false;
+let roomName;
 
 async function getCameras() {
   try {
@@ -22,7 +27,7 @@ async function getCameras() {
       $option.value = cam.deviceId;
       $option.innerText = cam.label;
       if (currCam.label === cam.label) {
-        option.selected = true;
+        $option.selected = true;
       }
       $cameraSelect.appendChild($option);
     });
@@ -54,8 +59,6 @@ async function getMedia(deviceId) {
     console.log(error);
   }
 }
-
-getMedia();
 
 function handleMuteClick() {
   myStream
@@ -89,3 +92,30 @@ async function handleCameraChange() {
 $muteBtn.addEventListener("click", handleMuteClick);
 $cameraBtn.addEventListener("click", handleCameraClick);
 $cameraSelect.addEventListener("input", handleCameraChange);
+
+//* Welcome Form (join a room)
+
+const $welcome = document.getElementById("welcome");
+const $welcomForm = $welcome.querySelector("form");
+
+function startMedia() {
+  $welcome.hidden = true;
+  $call.hidden = false;
+  getMedia();
+}
+
+function handleWelcomeSubmit(e) {
+  e.preventDefault();
+  const $input = $welcomForm.querySelector("input");
+  socket.emit("join_room", $input.value, startMedia);
+  roomName = $input.value;
+  $input.value = "";
+}
+
+$welcomForm.addEventListener("submit", handleWelcomeSubmit);
+
+// Socket Code
+
+socket.on("welcome", () => {
+  console.log("someone joined");
+});
