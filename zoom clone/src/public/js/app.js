@@ -99,17 +99,20 @@ $cameraSelect.addEventListener("input", handleCameraChange);
 const $welcome = document.getElementById("welcome");
 const $welcomForm = $welcome.querySelector("form");
 
-async function startMedia() {
+async function initCall() {
   $welcome.hidden = true;
   $call.hidden = false;
   await getMedia();
   makeConnection();
 }
 
-function handleWelcomeSubmit(e) {
+async function handleWelcomeSubmit(e) {
   e.preventDefault();
   const $input = $welcomForm.querySelector("input");
-  socket.emit("join_room", $input.value, startMedia);
+  // websocket/RTC의 속도가 media를 가져오는 속도나 연결을 만드는 속도보다 빠르기 때문에 순서를 변경
+  // getMedia하고, makeConnection을 한 다음 이벤트를 emit한다.
+  await initCall();
+  socket.emit("join_room", $input.value);
   roomName = $input.value;
   $input.value = "";
 }
@@ -129,8 +132,15 @@ socket.on("welcome", async () => {
 });
 
 // offerB에서 실행되는 코드
-socket.on("offer", (offer) => {
-  console.log(offer);
+socket.on("offer", async (offer) => {
+  myPeerConnection.setRemoteDescription(offer);
+  const answer = await myPeerConnection.createAnswer();
+  myPeerConnection.setLocalDescription(answer);
+  socket.emit("answer", answer, roomName);
+});
+
+socket.on("answer", (answer) => {
+  myPeerConnection.setRemoteDescription(answer);
 });
 
 // RTC Code
@@ -140,6 +150,7 @@ function makeConnection() {
   // 각 브라우저 따로 구성
   myPeerConnection = new RTCPeerConnection();
   // addStream()과 같은 역할
+  // track들을 개별적으로 추가해주는 함수
   myStream
     .getTracks()
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
