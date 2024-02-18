@@ -17,6 +17,7 @@ let isMuted = false;
 let isCameraOn = false;
 let roomName;
 let myPeerConnection;
+let myDataChannel;
 
 async function getCameras() {
   try {
@@ -128,7 +129,11 @@ $welcomForm.addEventListener("submit", handleWelcomeSubmit);
 
 // Socket Code
 
+// offerA
 socket.on("welcome", async () => {
+  myDataChannel = myPeerConnection.createDataChannel("chat");
+  myDataChannel.addEventListener("message", console.log);
+  console.log("made data channel");
   // 방을 만드는 offer A가 주체로 다른 브라우저에서 방에 접근하면 실행되는 코드
   const offer = await myPeerConnection.createOffer();
   // offer를 가지면 방금 만든 offer로 연결 구성 필요
@@ -140,6 +145,12 @@ socket.on("welcome", async () => {
 
 // offerB에서 실행되는 코드
 socket.on("offer", async (offer) => {
+  myPeerConnection.addEventListener("datachannel", (event) => {
+    myDataChannel = event.channel;
+    myDataChannel.addEventListener("message", (event) =>
+      console.log(event.data)
+    );
+  });
   console.log("received the offer");
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
@@ -164,7 +175,26 @@ socket.on("ice", (ice) => {
 function makeConnection() {
   // peer to peer connection
   // 각 브라우저 따로 구성
-  myPeerConnection = new RTCPeerConnection();
+  myPeerConnection = new RTCPeerConnection({
+    iceServers: [
+      {
+        urls: ["stun:ntk-turn-1.xirsys.com"],
+      },
+      {
+        username:
+          "_0MWyJAqUxfOlhrc_gh38b88AUCBboTAiKvyqzehQUI3dHF64eLO7kcdXDWcM9l6AAAAAGXR_bxoYW5uYWg=",
+        credential: "aef19f2c-ce5c-11ee-9bc2-0242ac120004",
+        urls: [
+          "turn:ntk-turn-1.xirsys.com:80?transport=udp",
+          "turn:ntk-turn-1.xirsys.com:3478?transport=udp",
+          "turn:ntk-turn-1.xirsys.com:80?transport=tcp",
+          "turn:ntk-turn-1.xirsys.com:3478?transport=tcp",
+          "turns:ntk-turn-1.xirsys.com:443?transport=tcp",
+          "turns:ntk-turn-1.xirsys.com:5349?transport=tcp",
+        ],
+      },
+    ],
+  });
   myPeerConnection.addEventListener("icecandidate", handleIce);
   // addstream event is deprecated. and safari no support.
   // myPeerConnection.addEventListener("addstream", handleAddStream);

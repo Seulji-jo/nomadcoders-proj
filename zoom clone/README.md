@@ -167,6 +167,10 @@ websocket사용이 불가해도 다른방법으로 돌아간다.
 
 ## WebRTC
 
+사용하면 안좋은 경우: peer가 많은 경우
+
+- 사용자가 많아지면 SFU(Seletive Forwarding Unit)를 사용해 서버에 의존한다.
+
 ### IceCandidate
 
 - offer와 answer를 받고난 후, 실행하는 이벤트
@@ -178,3 +182,17 @@ websocket사용이 불가해도 다른방법으로 돌아간다.
 ### Sender
 
 - peer로 보내진 media stream track을 컨트롤하게 한다.
+
+---
+
+### STUN
+
+- STUN서버는 컴퓨터가 공용 IP주소를 찾게 해준다.
+- 어떤 것을 request하면 인터넷에서 유저가 누군지 알려주는 서버
+
+---
+
+### DataChannel
+
+- 그물망 방식으로 할건지 고민하지 않아도 된다.
+  - DataChannel은 텍스트이기 때문에 업로드, 다운로드가 빠르다
