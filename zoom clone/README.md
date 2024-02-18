@@ -172,3 +172,9 @@ websocket사용이 불가해도 다른방법으로 돌아간다.
 - offer와 answer를 받고난 후, 실행하는 이벤트
 - Internet Connectivity Establishment(인터넷 연결 생성): webRTC에 필요한 프로토콜들을 의미한다.
 - 브라우저가 서로 소통할 수 있게 해주는 방법
+
+---
+
+### Sender
+
+- peer로 보내진 media stream track을 컨트롤하게 한다.
