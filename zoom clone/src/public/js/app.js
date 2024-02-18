@@ -133,14 +133,23 @@ socket.on("welcome", async () => {
 
 // offerB에서 실행되는 코드
 socket.on("offer", async (offer) => {
+  console.log("received the offer");
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
   socket.emit("answer", answer, roomName);
+  console.log("sent the answer");
 });
 
 socket.on("answer", (answer) => {
+  console.log("received the answer");
+
   myPeerConnection.setRemoteDescription(answer);
+});
+
+socket.on("ice", (ice) => {
+  console.log("received candidate");
+  myPeerConnection.addIceCandidate(ice);
 });
 
 // RTC Code
@@ -149,9 +158,24 @@ function makeConnection() {
   // peer to peer connection
   // 각 브라우저 따로 구성
   myPeerConnection = new RTCPeerConnection();
+  myPeerConnection.addEventListener("icecandidate", handleIce);
+  // addstream event is deprecated. and safari no support.
+  // myPeerConnection.addEventListener("addstream", handleAddStream);
+  myPeerConnection.addEventListener("track", handleAddStream);
   // addStream()과 같은 역할
   // track들을 개별적으로 추가해주는 함수
   myStream
     .getTracks()
     .forEach((track) => myPeerConnection.addTrack(track, myStream));
+}
+
+function handleIce(data) {
+  console.log("sent candidate");
+  socket.emit("ice", data.candidate, roomName);
+}
+
+function handleAddStream(data) {
+  const $peerFace = document.getElementById("peerFace");
+  $peerFace.srcObject = data.streams[0];
+  console.log("Peer's Stream", data.streams[0]);
 }
